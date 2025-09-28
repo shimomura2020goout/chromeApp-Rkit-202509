@@ -1,4 +1,4 @@
-# Resource Monitor - Chrome Extension
+# R kit - Chrome Extension
 
 ウェブページのリソース読み込み状況をリアルタイムで監視・分析するChrome拡張機能
 
@@ -71,4 +71,4 @@ MIT License
 
 ---
 
-開発開始日: 2024年9月27日
+開発開始日: 2025年9月28日
