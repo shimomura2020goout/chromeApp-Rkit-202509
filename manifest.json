@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "R kit",
+  "version": "1.0.0",
+  "description": "リアルタイムでウェブページのリソース読み込み状況を監視・分析するDevToolsパネル",
+  
+  "permissions": [
+    "storage"
+  ],
+  
+  "devtools_page": "devtools.html",
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "author": "Resource Monitor Developer",
+  "homepage_url": "https://github.com/yourusername/resource-monitor-extension",
+  
+  "minimum_chrome_version": "88"
+}

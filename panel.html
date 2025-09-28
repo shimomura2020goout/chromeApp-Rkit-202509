@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Resource Monitor Panel</title>
+    <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+    <div class="panel-container">
+        <!-- ヘッダー -->
+        <header class="panel-header">
+            <h1>🔍 R kit</h1>
+            <div class="controls">
+                <button id="refreshBtn" class="btn btn-primary">🔄 更新</button>
+                <button id="clearBtn" class="btn btn-secondary">🗑️ クリア</button>
+                <button id="exportBtn" class="btn btn-secondary">📥 エクスポート</button>
+            </div>
+        </header>
+
+        <!-- 統計情報 -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-value" id="totalResources">0</div>
+                <div class="stat-label">総リソース数</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalSize">0KB</div>
+                <div class="stat-label">総サイズ</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="loadTime">0ms</div>
+                <div class="stat-label">読み込み時間</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="largestResource">-</div>
+                <div class="stat-label">最大リソース</div>
+            </div>
+        </section>
+
+        <!-- フィルター・検索・ソートコントロール -->
+        <section class="controls-section">
+            <div class="filter-group">
+                <label>📋 フィルター:</label>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-type="all">すべて</button>
+                    <button class="filter-btn" data-type="document">📄 HTML</button>
+                    <button class="filter-btn" data-type="stylesheet">🎨 CSS</button>
+                    <button class="filter-btn" data-type="script">⚡ JS</button>
+                    <button class="filter-btn" data-type="image">🖼️ 画像</button>
+                    <button class="filter-btn" data-type="font">🔤 フォント</button>
+                    <button class="filter-btn" data-type="xmlhttprequest">🌐 XHR</button>
+                    <button class="filter-btn" data-type="other">📦 その他</button>
+                </div>
+            </div>
+            
+            <div class="search-sort-group">
+                <div class="search-group">
+                    <label>🔍 検索:</label>
+                    <input type="text" id="searchInput" placeholder="ファイル名、ドメイン、サイズで検索..." />
+                    <button id="searchClearBtn" class="btn btn-sm">✕</button>
+                </div>
+                
+                <div class="sort-group">
+                    <label>📊 ソート:</label>
+                    <select id="sortSelect">
+                        <option value="startTime">開始時刻</option>
+                        <option value="duration">所要時間</option>
+                        <option value="size">サイズ</option>
+                        <option value="name">名前</option>
+                        <option value="type">タイプ</option>
+                    </select>
+                    <button id="sortOrderBtn" class="btn btn-sm">⬇️</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- タイムライン表示 -->
+        <section class="timeline-section" id="timelineSection">
+            <div class="timeline-header-row">
+                <h3>📈 タイムライン</h3>
+                <div class="timeline-stats" id="timelineStats">
+                    <div class="timeline-stat-item">
+                        <span class="timeline-stat-label">リソース数:</span>
+                        <span class="timeline-stat-value" id="timelineResourceCount">0</span>
+                    </div>
+                    <div class="timeline-stat-item">
+                        <span class="timeline-stat-label">総サイズ:</span>
+                        <span class="timeline-stat-value" id="timelineTotalSize">0B</span>
+                    </div>
+                    <div class="timeline-stat-item">
+                        <span class="timeline-stat-label">読み込み時間:</span>
+                        <span class="timeline-stat-value" id="timelineLoadTime">0ms</span>
+                    </div>
+                    <div class="timeline-stat-item">
+                        <span class="timeline-stat-label">最大リソース:</span>
+                        <span class="timeline-stat-value" id="timelineLargestResource">-</span>
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-container">
+                <div class="timeline-header">
+                    <div class="timeline-scale" id="timelineScale"></div>
+                </div>
+                <div class="timeline-content" id="timelineContent">
+                    <div class="timeline-placeholder">
+                        ページを読み込んでリソース情報を取得してください
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- リサイザー -->
+        <div class="resizer" id="resizer"></div>
+
+        <!-- リソース一覧テーブル -->
+        <section class="table-section">
+            <h3>📋 リソース一覧</h3>
+            <div class="table-container">
+                <table class="resources-table">
+                    <thead>
+                        <tr>
+                            <th class="sortable" data-sort="name" title="読み込まれたファイルの名前">名前</th>
+                            <th class="sortable" data-sort="type" title="ファイルの種類（画像、CSS、JavaScriptなど）">タイプ</th>
+                            <th class="sortable" data-sort="domain" title="ファイルがあるウェブサイトのアドレス">ドメイン</th>
+                            <th class="sortable" data-sort="size" title="ファイルの大きさ（バイト単位）">サイズ</th>
+                            <th class="sortable" data-sort="startTime" title="ファイルの読み込みが始まった時間">開始時刻</th>
+                            <th class="sortable" data-sort="duration" title="ファイルの読み込みにかかった時間">所要時間</th>
+                            <th class="sortable" data-sort="status" title="読み込み結果（成功/失敗）">ステータス</th>
+                            <th title="ページで使用されているCookieの数">Cookies</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resourcesTableBody">
+                        <tr class="placeholder-row">
+                            <td colspan="8" class="placeholder-text">
+                                リソース情報を読み込み中...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 詳細情報パネル -->
+        <section class="details-section" id="detailsSection" style="display: none;">
+            <h3>📝 詳細情報</h3>
+            <div class="details-content" id="detailsContent">
+                <!-- 動的に詳細情報が表示される -->
+            </div>
+        </section>
+    </div>
+
+    <script src="panel.js"></script>
+</body>
+</html>
